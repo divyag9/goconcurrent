@@ -10,26 +10,16 @@ import (
 	concurrent "github.com/divyag9/goconcurrent/packages/concurrent"
 )
 
-//Result represents the result of running the command
-type Result struct {
-	res string
-	err error
-}
-
 func main() {
 	runtime.GOMAXPROCS(2)
 	// Parsing the command line arguments
 	numRoutines, execCommand := getCommandLineArguments()
-	result := make(chan Result)
 	var wg sync.WaitGroup
 	wg.Add(*numRoutines)
 	// Calling concurrently
 	for i := 0; i < *numRoutines; i++ {
-		go callExecuteCommand(result, &wg, *execCommand)
-		output := <-result
-		fmt.Println("Result: ", output.res, " Error: ", output.err)
+		go callExecuteCommand(&wg, *execCommand)
 	}
-	close(result)
 	wg.Wait()
 }
 
@@ -44,8 +34,8 @@ func getCommandLineArguments() (*int, *string) {
 	return numRoutines, execCommand
 }
 
-func callExecuteCommand(result chan Result, wg *sync.WaitGroup, command string) {
+func callExecuteCommand(wg *sync.WaitGroup, command string) {
 	defer wg.Done()
 	res, err := concurrent.ExecuteCommand(command)
-	result <- Result{res: res, err: err}
+	fmt.Println("Result: ", res, " Error: ", err)
 }
