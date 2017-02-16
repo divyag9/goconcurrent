@@ -20,15 +20,16 @@ func main() {
 	runtime.GOMAXPROCS(2)
 	// Parsing the command line arguments
 	numRoutines, execCommand := getCommandLineArguments()
+	result := make(chan Result)
 	var wg sync.WaitGroup
 	wg.Add(*numRoutines)
 	// Calling concurrently
 	for i := 0; i < *numRoutines; i++ {
-		result := make(chan Result)
 		go callExecuteCommand(result, &wg, *execCommand)
 		output := <-result
-		fmt.Printf("Result:%s, Error: %s", output.res, output.err)
+		fmt.Println("Result: ", output.res, " Error: ", output.err)
 	}
+	close(result)
 	wg.Wait()
 }
 
