@@ -21,9 +21,9 @@ func main() {
 	// Parsing the command line arguments
 	numRoutines, execCommand := getCommandLineArguments()
 	var wg sync.WaitGroup
+	wg.Add(*numRoutines)
 	// Calling concurrently
 	for i := 0; i < *numRoutines; i++ {
-		wg.Add(1)
 		result := make(chan Result)
 		go callExecuteCommand(result, &wg, *execCommand)
 		output := <-result
