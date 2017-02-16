@@ -36,6 +36,8 @@ func getCommandLineArguments() (*int, *string) {
 
 func callExecuteCommand(wg *sync.WaitGroup, command string) {
 	defer wg.Done()
-	res, err := concurrent.ExecuteCommand(command)
-	fmt.Println("Result: ", res, " Error: ", err)
+	_, err := concurrent.ExecuteCommand(command)
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
 }
